@@ -1,11 +1,11 @@
-POST 
+POST http://127.0.0.1:3000/api
 
 ###
-GET
+GET http://127.0.0.1:3000/api
 
 ###
-PUT 
+PUT http://127.0.0.1:3000/api
 
 ###
-DELETE 
+DELETE http://127.0.0.1:3000/api
 
