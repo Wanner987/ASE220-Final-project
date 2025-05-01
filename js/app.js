@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs');
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 const { MongoClient, ObjectId, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://whatever:whatever123123123@cluster0.c0e2tij.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -20,6 +20,9 @@ app.post('/api', async function(req, res) {
 });
 app.get('/api', async function(req, res) {
     console.log('get');
+    let result=await findCollection(db,'mflix_sample','movies')
+    result=await result.toArray()
+    console.log(result)
     res.send('get request');
 });
 app.put('/api', async function(req, res) {
