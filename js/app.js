@@ -13,29 +13,35 @@ var db;
 
 //connect to db and listen to port
 start();
-console.log('dffff')
+
 app.post('/api', async function(req, res) {
-	console.log('posted')
-    res.send('post request');
+	console.log('HEY THERE')
+    let result=await findCollection('mflix_sample','movies', req.body);
+    result=await result.toArray();
+    res.json(result);
 });
+
 app.get('/api', async function(req, res) {
-    console.log('get');
-    let result=await findCollection(db,'mflix_sample','movies')
-    result=await result.toArray()
-    console.log(result)
-    res.send('get request');
+    console.log('HI GET');
+    let result=await findCollection('mflix_sample','movies', req.body);
+    result=await result.toArray();
+    res.json(result);
 });
+
 app.put('/api', async function(req, res) {
-	console.log('put')
-    res.send('put request');
+	console.log('put');
+    res.send('put request new');
 });
+
 app.delete('/api', async function(req, res) {
-	console.log('deleted')
+	console.log('deleted');
     res.send('delete request');
 });
 
-async function findCollection(db, database, collection) {
-    let result = await db.db(database).collection(collection).find({});
+//-----------------------------------------------------------------------------------------------
+async function findCollection(database, collection, criteria) {
+    console.log(criteria);
+    let result = await db.db(database).collection(collection).find(criteria);
     return result;
 }
 
