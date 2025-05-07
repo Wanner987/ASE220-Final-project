@@ -2,10 +2,11 @@ const express = require('express');
 const fs = require('fs');
 
 const app = express();
+app.use(express.json());
 const port = 3001;
 
 const { MongoClient, ObjectId, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://whatever:whatever123123123@cluster0.c0e2tij.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = "mongodb+srv://andrewst8:password123123@cluster0.4yg95y3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(uri, { 
     useNewUrlParser: true, 
     useUnifiedTopology: true, 
@@ -17,16 +18,13 @@ var db;
 start();
 
 app.post('/api', async function(req, res) {
-	console.log('HEY THERE')
-    let result=await findCollection('mflix_sample','movies', req.body);
-    result=await result.toArray();
+	console.log('post');
+    let result = InsertOne('Test', 'Test-Collection', req.body)
     res.json(result);
 });
 
 app.get('/api', async function(req, res) {
-    console.log(req.body);
-    let result=await findInCollection('mflix_sample','movies', req.body);
-    //const movies = await db.db("sample_mflix").collection("movies").find({"runtime" : 35}).toArray();
+    let result=await findInCollection("Test","Test-Collection", req.body);
     res.json(result);
 });
 
@@ -45,6 +43,12 @@ async function findInCollection(database, collection, criteria) {
     console.log(JSON.stringify(criteria));
     let result = await db.db(database).collection(collection).find(criteria).toArray();
     return result;
+}
+
+async function InsertOne(database, collection, content) {
+    let result = await db.db(database).collection(collection).insertOne(content);
+    console.log("Inserted quote with id:", result.insertedId);
+    return findInCollection(database, collection, content);
 }
 
 async function connectToMongo() {

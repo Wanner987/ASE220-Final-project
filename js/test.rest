@@ -2,15 +2,18 @@ POST http://127.0.0.1:3001/api
 Content-Type: application/json
 
 {
-
+    "test" : true,
+    "number" : 12,
+    "String" : "HELLOW"
 }
 ###
 GET http://127.0.0.1:3001/api
 Content-Type: application/json
 
 {
-    "runtime" : 35
+    "test" : true
 }
+
 ###
 PUT http://127.0.0.1:3001/api
 Content-Type: application/json
