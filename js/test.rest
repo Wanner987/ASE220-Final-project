@@ -6,10 +6,10 @@ Content-Type: application/json
 }
 ###
 GET http://127.0.0.1:3001/api
-Content-Type: application/jsons
+Content-Type: application/json
 
 {
-
+    "runtime" : 35
 }
 ###
 PUT http://127.0.0.1:3001/api

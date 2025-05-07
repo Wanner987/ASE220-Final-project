@@ -12,7 +12,6 @@ const client = new MongoClient(uri, {
     serverApi: ServerApiVersion.v1 });
 
 var db;
-//var database = "sample_mflix";
 
 //connect to db and listen to port
 start();
@@ -25,19 +24,9 @@ app.post('/api', async function(req, res) {
 });
 
 app.get('/api', async function(req, res) {
-    console.log('HI GET');
-    let result=await findCollection('mflix_sample','movies', req.body);
-    try {
-        const movies = await client.db("sample_mflix").collection("movies").insertOne({}).sort({year:1}).skip(4).limit(2).toArray();
-        
-        res.send("movies")
-      } catch (error) {
-        console.error('Error fetching user:', error);
-        res.send('Connection error')
-      } finally {
-        client.close();
-    }
-    result=await result.toArray();
+    console.log(req.body);
+    let result=await findInCollection('mflix_sample','movies', req.body);
+    //const movies = await db.db("sample_mflix").collection("movies").find({"runtime" : 35}).toArray();
     res.json(result);
 });
 
@@ -52,9 +41,9 @@ app.delete('/api', async function(req, res) {
 });
 
 //-----------------------------------------------------------------------------------------------
-async function findCollection(database, collection, criteria) {
-    console.log(criteria);
-    let result = await db.db(database).collection(collection).find(criteria);
+async function findInCollection(database, collection, criteria) {
+    console.log(JSON.stringify(criteria));
+    let result = await db.db(database).collection(collection).find(criteria).toArray();
     return result;
 }
 
