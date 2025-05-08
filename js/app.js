@@ -26,7 +26,7 @@ start();
 
 app.post('/api', async function(req, res) {
 	console.log('post');
-    let result = InsertOne('Test', 'Test-Collection', req.body)
+    let result = insertOne('Test', 'Test-Collection', req.body)
     res.json(result);
 });
 
@@ -45,6 +45,31 @@ app.delete('/api', async function(req, res) {
     res.send('delete request');
 });
 
+//login api
+
+app.post('/api/users', async function(req, res) {
+    let result = insertOne('Game_Articles', 'Users', req.body);
+    res.send('Added user to database');
+});
+
+app.get('/api/:username/:password', async function(req, res) {
+    let username = req.params.username;
+    let password = req.params.password;
+
+    let result = findInCollection('Game_Articles', 'Users', {
+        "username" : `${username}`,
+        "password" : `${password}`
+    });
+    res.json(result);
+})
+
+//posts api
+
+app.post('/api/posts', async function(req, res) {
+    insertOne('Game_Articles', 'Posts', req.body);
+})
+
+
 //-----------------------------------------------------------------------------------------------
 async function findInCollection(database, collection, criteria) {
     console.log(JSON.stringify(criteria));
@@ -52,7 +77,7 @@ async function findInCollection(database, collection, criteria) {
     return result;
 }
 
-async function InsertOne(database, collection, content) {
+async function insertOne(database, collection, content) {
     let result = await db.db(database).collection(collection).insertOne(content);
     console.log("Inserted quote with id:", result.insertedId);
     return findInCollection(database, collection, content);
