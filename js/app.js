@@ -5,6 +5,13 @@ const app = express();
 app.use(express.json());
 const port = 3001;
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*'); // Allow all origins
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+  });
+
 const { MongoClient, ObjectId, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://andrewst8:password123123@cluster0.4yg95y3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(uri, { 
