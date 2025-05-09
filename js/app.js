@@ -109,8 +109,11 @@ app.delete('/api/posts/:postID', verifyToken, async function (req, res) {
     const postUsers = await findInCollection('game_articles', 'posts', { _id: new ObjectId(req.params.postID) });
     const postUser = postUsers[0];
 
+    console.log(postUser);
+    console.log(tokenUsername);
+
     if(tokenUsername == postUser.user) {
-        deletePost('game_articles', 'posts', req.params.postID);
+        let result = await deletePost('game_articles', 'posts', req.params.postID);
     }
 })
 

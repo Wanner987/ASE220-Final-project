@@ -49,7 +49,8 @@ function clickableButtons() {
         }
     });
 
-    $('#delete-post').click(function() {
+    $('#my-card-row').on('click', '#delete-post', function() {
+        console.log(isLoggedIn);
         if(isLoggedIn) {
             deletePost($(this).data('id'));
         }
@@ -163,10 +164,16 @@ function updatePost(id, newContent) {
 }
 
 function deletePost(id) {
+    const token = localStorage.getItem('token');
+
+    
     $.ajax({
         url: `http://127.0.0.1:3001/api/posts/${id}`,
         type: 'DELETE',
         contentType: 'application/json',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
         success: function(response) {
             return response;
         },
