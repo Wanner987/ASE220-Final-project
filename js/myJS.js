@@ -1,66 +1,107 @@
+var clientUSername;
+
 $(document).ready( function() {
     clickableButtons();
-    loadCards();
-    getFromDatabase({"test" : true});
+    loadCards(1);
 });
 
 function clickableButtons() {
     $("#login-button").click(function() {
-        let uername = $('#login-username').val();
+        let username = $('#login-username').val();
         let password = $('#login-password').val();
-        
+        let userObject = loginUserFromDatabase(username, password);
+        $('#display-username').text(username);
+        clientUSername = username;
+    });
+
+    $('#post-button').click(function() {
+        let content = $('#post-content').val();
+        if(clientUSername) {
+            postToCollection('posts', {
+                "user" : `${clientUSername}`,
+                "content" : `${content}`
+            })
+        }
+
+    })
+}
+
+function loadCards(page) {
+
+    getCardsFromDatabase(1, function(cards) {
+        cards.forEach(card => {
+            let content = card.content || "...";
+            let user = card.user || "Unknown";
+
+            let cardHTML = `
+                <div class="col-12 col-lg-4">
+                    <div class="card" style="width: 100%;">
+                        <div class="card-body">
+                            <h5 class="card-title">${user}</h5>
+                            <p class="card-text">${content}</p>
+                            <a href="#" class="btn btn-primary">Comment</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            $('#my-card-row').append(cardHTML);
+        });
+    });
+    
+}
+
+function getCardsFromDatabase(page, callback) {
+    $.ajax({
+        url: `http://127.0.0.1:3001/api/posts/${page}`,
+        type: 'GET',
+        contentType: 'application/json',
+        success: function(response) {
+            callback(response);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading data:', error);
+        }
     });
 }
 
-function loadCards() {
-
-    let image = "https://cdna.artstation.com/p/assets/images/images/032/448/536/large/mitchell-netes-ahem.jpg?1606471608";
-    let content = "...";
-    let user = "some guy";
-
-    let cardHTML = `<div class="col-12 col-lg-4">
-                        <div class="card" style="width: 100%;">
-                            <img src="${image}" class="card-img-top" alt="...">
-                            <div class="card-body">
-                                <h5 class="card-title">${user}</h5>
-                                <p class="card-text">${content}</p>
-                                <a href="#" class="btn btn-primary">Comment</a>
-                            </div>
-                        </div>
-                    </div>`;
-    
-    $('#my-card-row').append(cardHTML)
-    
-}
-
-function getFromDatabase(criteria) {
-    console.log(JSON.stringify(criteria));
+function postToCollection(collection, body) {
     $.ajax({
-        url: 'http://127.0.0.1:3001/api',
-        type: 'GET',
+        url: `http://127.0.0.1:3001/api/${collection}`,
+        type: 'POST',
         contentType: 'application/json',
+        data: JSON.stringify(body),
         success: function(response) {
             alert(JSON.stringify(response));
         },
         error: function(xhr, status, error) {
             console.error('Error loading data:', error);
         }
-    })
+    });
 }
 
-function addPost() {
-
+function loginUserFromDatabase(username, password) {
+    $.ajax({
+        url: `http://127.0.0.1:3001/api/users/login`,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            "username" : `${username}`,
+            "password" : `${password}`
+        }),
+        success: function(response) {
+            console.log(JSON.stringify(response));
+            let token = response['token'];
+            localStorage.setItem('token', token);
+            return(JSON.stringify(response));
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading data:', error);
+        }
+    });
 }
+
 
 function commentOnPost() {
 
 }
-
-function login() {
-
-}
-
-function signUp() {
-
-}
-

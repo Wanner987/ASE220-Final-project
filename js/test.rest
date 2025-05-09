@@ -18,3 +18,23 @@ Content-Type: application/json
 ###
 DELETE http://127.0.0.1:3001/api
 
+###
+POST http://127.0.0.1:3001/api/users/login
+Content-Type: application/json
+
+{
+    "username" : "bob",
+    "password" : "123"
+}
+
+###
+POST http://127.0.0.1:3001/api/posts
+Content-Type: application/json
+
+{
+    "user" : "guy10",
+    "content" : "this is 10"
+}
+
+###
+GET http://127.0.0.1:3001/api/posts/1
