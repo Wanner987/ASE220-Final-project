@@ -88,18 +88,42 @@ app.delete('/api/posts/:postID', verifyToken, async function (req, res) {
     const postUsers = await findInCollection('game_articles', 'posts', { _id: new ObjectId(req.params.postID) });
     const postUser = postUsers[0];
 
-    console.log(postUser);
-    console.log(tokenUsername);
-
     if(tokenUsername == postUser.user) {
         let result = await deletePost('game_articles', 'posts', req.params.postID);
     }
-})
+});
+
+
+//comment api
+app.post('/api/comments', verifyToken, async function(req, res) {
+    const { postID, user, content } = req.body;
+
+    let result = await insertOne('game_articles', 'comments', {
+        "postID" : postID,
+        "user": user,
+        "content":content
+    });
+});
+
+app.get('/api/comments/:postID', async function(req, res) {
+    let result = await findInCollection('game_articles', 'comments', {"postID": req.params.postID})
+    res.json(result);
+});
+
+app.delete('/api/comments/:commentID', verifyToken, async function (req, res) {
+    const tokenUsername = req.user.username; 
+    const commentUsers = await findInCollection('game_articles', 'comments', { _id: new ObjectId(req.params.commentID) });
+    const commentUser = commentUsers[0];
+
+
+    if(tokenUsername == commentUser.user) {
+        let result = await deletePost('game_articles', 'comments', req.params.commentID);
+    }
+});
 
 
 //-----------------------------------------------------------------------------------------------
 async function findInCollection(database, collection, criteria) {
-    console.log(JSON.stringify(criteria));
     let result = await db.db(database).collection(collection).find(criteria).toArray();
     return result;
 }
@@ -151,7 +175,6 @@ function verifyToken(req, res, next) {
         }
 
         // If valid, attach the decoded user info to the request object
-        console.log('Decoded token:', decoded);
         req.user = decoded;
         next();  // Continue to the next middleware/route handler
     });

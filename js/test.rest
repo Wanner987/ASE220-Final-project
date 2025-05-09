@@ -1,22 +1,3 @@
-POST http://127.0.0.1:3001/api
-Content-Type: application/json
-
-{
-    "test" : true,
-    "number" : 12,
-    "String" : "HELLOW"
-}
-###
-GET http://127.0.0.1:3001/api
-Content-Type: application/json
-
-
-###
-PUT http://127.0.0.1:3001/api
-Content-Type: application/json
-
-###
-DELETE http://127.0.0.1:3001/api
 
 ###
 POST http://127.0.0.1:3001/api/users/login
@@ -47,3 +28,5 @@ Content-Type: application/json
     "user" : "bob",
     "content" : "new content test"
 }
+
+###

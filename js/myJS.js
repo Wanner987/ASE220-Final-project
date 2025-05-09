@@ -36,7 +36,6 @@ function clickableButtons() {
 
     $('#my-card-row').on('click', '#go-to-edit-post', function() {
         currentPostID = $(this).data('id');
-        console.log(currentPostID);
     });
     
     $('#edited-content-button').click(function() {
@@ -50,18 +49,35 @@ function clickableButtons() {
     });
 
     $('#my-card-row').on('click', '#delete-post', function() {
-        console.log(isLoggedIn);
         if(isLoggedIn) {
             deletePost($(this).data('id'));
         }
-    })
+    });
+
+    $('#my-card-row').on('click', '#comment-on-post-button', function() {
+        currentPostID = $(this).data('id');
+    });
+    
+    $('#comment-content-button').click(function() {
+        if(isLoggedIn) {
+            let content = $('#comment-content').val();
+            console.log(currentPostID);
+            commentOnPost(currentPostID, clientUSername, content);
+        }
+    });
+
+    $('#my-card-row').on('click', '.delete-comment-button', function() {
+        if(isLoggedIn) {
+            deleteComment($(this).data('id'));
+        }
+    });
 }
 
 function loadCards(page) {
 
     getCardsFromDatabase(page, function(cards) {
         cards.forEach(card => {
-            let content = card.content || "...";
+            let content = card.content || "..."; 
             let user = card.user || "Unknown";
             let cardID = card._id;
 
@@ -71,13 +87,34 @@ function loadCards(page) {
                         <div class="card-body">
                             <h5 class="card-title">${user}</h5>
                             <p class="card-text">${content}</p>
-                            <a href="#" class="btn btn-primary">Comment</a>
+                            <a href="#" class="btn btn-primary" id="comment-on-post-button" data-bs-toggle="modal" data-bs-target="#commentModal" data-id="${cardID}">Comment</a>
                             <a href="#" class="btn btn-secondary edit-post" data-id="${cardID}" data-bs-toggle="modal" data-bs-target="#editPostModal" id="go-to-edit-post">Edit Post</a>
                             <a href="#" class="btn btn-primary" data-id="${cardID}" id="delete-post">Delete Post</a>
+                            <label>Comments</label>
+                            <ul class="comment-section-card" data-id="${cardID}">
+
+                            </ul>
+                        </div>
                         </div>
                     </div>
                 </div>
             `;
+
+            let commentsLoad = getCommentsOnPost(cardID, function(comments) {
+                console.log(comments)
+                if(comments.length > 0) {
+                    comments.forEach(comment => {
+                        let commenter = comment.user || "Unknown";
+                        let commentContent = comment.content || "...";
+                        let commentID = comment._id;
+                        
+                        let commentHTML = `<li>${commenter}: ${commentContent}<button class="delete-comment-button" data-id="${commentID}" >Delete</button></li>`;
+
+                        $(`.comment-section-card[data-id="${cardID}"]`).append(commentHTML);
+                    })
+                }
+            });
+
 
             $('#my-card-row').append(cardHTML);
         });
@@ -170,7 +207,6 @@ function updatePost(id, newContent) {
 
 function deletePost(id) {
     const token = localStorage.getItem('token');
-
     
     $.ajax({
         url: `http://127.0.0.1:3001/api/posts/${id}`,
@@ -188,6 +224,59 @@ function deletePost(id) {
     });
 }
 
-function commentOnPost() {
+function commentOnPost(postID, commenter, content) {
+    const token = localStorage.getItem('token');
 
+    $.ajax({
+        url: `http://127.0.0.1:3001/api/comments`,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            "postID": postID,
+            "user": `${commenter}`,
+            "content": `${content}`
+        }),
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        success: function(response) {
+            return response;
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading data:', error);
+        }
+    });
+}
+
+function getCommentsOnPost(postID, callback) {
+    $.ajax({
+        url: `http://127.0.0.1:3001/api/comments/${postID}`,
+        type: 'GET',
+        contentType: 'application/json',
+        success: function(response) {
+            callback(response);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading data:', error);
+        }
+    });
+}
+
+function deleteComment(id) {
+    const token = localStorage.getItem('token');
+    
+    $.ajax({
+        url: `http://127.0.0.1:3001/api/comments/${id}`,
+        type: 'DELETE',
+        contentType: 'application/json',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        success: function(response) {
+            return response;
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading data:', error);
+        }
+    });
 }
