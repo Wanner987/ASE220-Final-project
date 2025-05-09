@@ -35,21 +35,25 @@
             <!--Cards for articles-->
             <div class="container" id="my-card-container">
                 <div class="row" id="my-card-row">
-                  <!--
+                  
                   <div class="col-12 col-lg-4">
                         <div class="card" style="width: 100%;">
                             <img src="..." class="card-img-top" alt="...">
                             <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                              <h5 class="card-title">Card title</h5>
+                              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+                              <a href="#" class="btn btn-primary" id="comment-on-post">Comment</a>
+                              <a href="#" class="btn btn-secondary edit-post" data-id="${cardID}" data-bs-toggle="modal" data-bs-target="#editPostModal" id="go-to-edit-post">Edit Post</a>
+                              <a href="#" class="btn btn-primary" id="delete-post">Delete Post</a>
                             </div>
                         </div>
                     </div>
-                  -->
+                  
                 </div>
             </div>
+            <button type="button" class="btn btn-secondary" id="load-more-button">Load more</button>
           </main>
+
 
         <!--Modal for Login-->
         <!-- Modal -->
@@ -80,7 +84,7 @@
             <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addPostModalLabel">Login Credentials</h5>
+                    <h5 class="modal-title" id="addPostModalLabel">Add Post</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -95,6 +99,25 @@
             </div>
         </div>
 
+        <!--Modal for edit post-->
+        <div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="editPostModalLabel">Edit Post</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <label for="edited-content" class="col-form-label">New Content</label>
+                  <input type="text" class="form-control" id="edited-content">
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" id="edited-content-button">Edit</button>
+              </div>
+          </div>
+          </div>
+      </div>
 
         
         <!--bootstrap script-->

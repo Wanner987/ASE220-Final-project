@@ -38,3 +38,12 @@ Content-Type: application/json
 
 ###
 GET http://127.0.0.1:3001/api/posts/1
+
+###
+PUT http://127.0.0.1:3001/api/posts/681d5effa250ae3ebcf15ce1
+Content-Type: application/json
+
+{
+    "user" : "bob",
+    "content" : "new content test"
+}

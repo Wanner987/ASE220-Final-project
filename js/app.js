@@ -59,7 +59,8 @@ app.post('/api/users', async function(req, res) {
 });
 
 app.post('/api/users/login', async function(req, res) {
-    let user = await findInCollection('game_articles', 'users', req.body);
+    let users = await findInCollection('game_articles', 'users', req.body);
+    const user = users[0];
     
     //if user exists
     if (!user) {
@@ -90,6 +91,19 @@ app.post('/api/posts', async function(req, res) {
     insertOne('game_articles', 'posts', req.body);
 })
 
+app.put('/api/posts/:postID', verifyToken, async function(req, res) {
+    const tokenUsername = req.user.username; 
+    const postUsers = findInCollection('game_articles', 'posts', {"_id" : `${req.params.postID}`});
+    const postUser = postUsers[0];
+
+    console.log(tokenUsername);
+    console.log(postUser);
+    
+    if(tokenUsername == paramUsername) {
+        updateObject('game_articles', 'posts', req.params.postID, req.body);
+    }
+});
+
 
 //-----------------------------------------------------------------------------------------------
 async function findInCollection(database, collection, criteria) {
@@ -101,7 +115,16 @@ async function findInCollection(database, collection, criteria) {
 async function insertOne(database, collection, content) {
     let result = await db.db(database).collection(collection).insertOne(content);
     console.log("Inserted quote with id:", result.insertedId);
-    }
+}
+
+async function updateObject(database, collection, id, newContent) {
+    let result = await db.db(database).collection(collection).updateOne(
+        { _id: new ObjectId(id) },
+        { $set: newContent }
+    );
+    console.log('updated id', id)
+    return result;
+}
 
 async function connectToMongo() {
     let connection = await client.connect();
@@ -114,4 +137,25 @@ async function start() {
     app.listen(port, () => {
         console.log(`Example app listening on port ${port}`)
       });
+}
+
+function verifyToken(req, res, next) {
+    const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1]; // Get token from "Authorization: Bearer <token>"
+
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    // Verify the token using your secret key
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ message: 'Invalid token' });
+        }
+
+        // If valid, attach the decoded user info to the request object
+        console.log('Decoded token:', decoded);
+        req.user = decoded;
+        next();  // Continue to the next middleware/route handler
+    });
+
 }

@@ -1,8 +1,10 @@
 var clientUSername;
+var currentPage = 1;
+var currentPostID;
 
 $(document).ready( function() {
     clickableButtons();
-    loadCards(1);
+    loadCards(currentPage);
 });
 
 function clickableButtons() {
@@ -22,16 +24,35 @@ function clickableButtons() {
                 "content" : `${content}`
             })
         }
+    });
 
-    })
+    $('#load-more-button').click(function() {
+        currentPage += 1;
+        loadCards(currentPage);
+    });
+
+    $('#my-card-row').on('click', '#go-to-edit-post', function() {
+        currentPostID = $(this).data('id');
+        console.log(currentPostID);
+    });
+    
+    $('#edited-content-button').click(function() {
+        let content = $('#edited-content').val();
+        updatePost(currentPostID, {
+            "user" : `${clientUSername}`,
+            "content" : `${content}`
+        });
+
+    });
 }
 
 function loadCards(page) {
 
-    getCardsFromDatabase(1, function(cards) {
+    getCardsFromDatabase(page, function(cards) {
         cards.forEach(card => {
             let content = card.content || "...";
             let user = card.user || "Unknown";
+            let cardID = card._id;
 
             let cardHTML = `
                 <div class="col-12 col-lg-4">
@@ -40,6 +61,8 @@ function loadCards(page) {
                             <h5 class="card-title">${user}</h5>
                             <p class="card-text">${content}</p>
                             <a href="#" class="btn btn-primary">Comment</a>
+                            <a href="#" class="btn btn-secondary edit-post" data-id="${cardID}" data-bs-toggle="modal" data-bs-target="#editPostModal" id="go-to-edit-post">Edit Post</a>
+                            <a href="#" class="btn btn-primary" id="delete-post">Delete Post</a>
                         </div>
                     </div>
                 </div>
@@ -48,7 +71,6 @@ function loadCards(page) {
             $('#my-card-row').append(cardHTML);
         });
     });
-    
 }
 
 function getCardsFromDatabase(page, callback) {
@@ -101,6 +123,33 @@ function loginUserFromDatabase(username, password) {
     });
 }
 
+function updatePost(id, newContent) {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        console.error('JWT token is missing');
+        return;
+    }
+
+
+
+    $.ajax({
+        url: `http://127.0.0.1:3001/api/posts/${id}`,
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(newContent),
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        success: function(response) {
+            console.log(JSON.stringify(response));
+            return(JSON.stringify(response));
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading data:', error);
+        }
+    });
+}
 
 function commentOnPost() {
 
