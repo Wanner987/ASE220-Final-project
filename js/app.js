@@ -93,16 +93,26 @@ app.post('/api/posts', async function(req, res) {
 
 app.put('/api/posts/:postID', verifyToken, async function(req, res) {
     const tokenUsername = req.user.username; 
-    const postUsers = findInCollection('game_articles', 'posts', {"_id" : `${req.params.postID}`});
+    const postUsers = await findInCollection('game_articles', 'posts', { _id: new ObjectId(req.params.postID) });
     const postUser = postUsers[0];
-
-    console.log(tokenUsername);
-    console.log(postUser);
     
-    if(tokenUsername == paramUsername) {
+    if(tokenUsername == postUser.user) {
+        console.log(req.body);
         updateObject('game_articles', 'posts', req.params.postID, req.body);
+    } else{
+        console.log('not the same users')
     }
 });
+
+app.delete('/api/posts/:postID', verifyToken, async function (req, res) {
+    const tokenUsername = req.user.username; 
+    const postUsers = await findInCollection('game_articles', 'posts', { _id: new ObjectId(req.params.postID) });
+    const postUser = postUsers[0];
+
+    if(tokenUsername == postUser.user) {
+        deletePost('game_articles', 'posts', req.params.postID);
+    }
+})
 
 
 //-----------------------------------------------------------------------------------------------
@@ -123,6 +133,12 @@ async function updateObject(database, collection, id, newContent) {
         { $set: newContent }
     );
     console.log('updated id', id)
+    return result;
+}
+
+async function deletePost(database, collection, id) {
+    const result = await db.db(database).collection(collection).deleteOne({ _id: new ObjectId(id) });
+    console.log(`Deleted ${result.deletedCount}`);
     return result;
 }
 

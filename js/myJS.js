@@ -1,6 +1,7 @@
 var clientUSername;
 var currentPage = 1;
 var currentPostID;
+var isLoggedIn = false;
 
 $(document).ready( function() {
     clickableButtons();
@@ -17,12 +18,14 @@ function clickableButtons() {
     });
 
     $('#post-button').click(function() {
-        let content = $('#post-content').val();
-        if(clientUSername) {
-            postToCollection('posts', {
-                "user" : `${clientUSername}`,
-                "content" : `${content}`
-            })
+        if(isLoggedIn) {
+            let content = $('#post-content').val();
+            if(clientUSername) {
+                postToCollection('posts', {
+                    "user" : `${clientUSername}`,
+                    "content" : `${content}`
+                })
+            }
         }
     });
 
@@ -37,13 +40,20 @@ function clickableButtons() {
     });
     
     $('#edited-content-button').click(function() {
-        let content = $('#edited-content').val();
-        updatePost(currentPostID, {
-            "user" : `${clientUSername}`,
-            "content" : `${content}`
-        });
-
+        if(isLoggedIn) {
+            let content = $('#edited-content').val();
+            updatePost(currentPostID, {
+                "user" : `${clientUSername}`,
+                "content" : `${content}`
+            });
+        }
     });
+
+    $('#delete-post').click(function() {
+        if(isLoggedIn) {
+            deletePost($(this).data('id'));
+        }
+    })
 }
 
 function loadCards(page) {
@@ -62,7 +72,7 @@ function loadCards(page) {
                             <p class="card-text">${content}</p>
                             <a href="#" class="btn btn-primary">Comment</a>
                             <a href="#" class="btn btn-secondary edit-post" data-id="${cardID}" data-bs-toggle="modal" data-bs-target="#editPostModal" id="go-to-edit-post">Edit Post</a>
-                            <a href="#" class="btn btn-primary" id="delete-post">Delete Post</a>
+                            <a href="#" class="btn btn-primary" data-id="${cardID}" id="delete-post">Delete Post</a>
                         </div>
                     </div>
                 </div>
@@ -115,6 +125,7 @@ function loginUserFromDatabase(username, password) {
             console.log(JSON.stringify(response));
             let token = response['token'];
             localStorage.setItem('token', token);
+            isLoggedIn = true;
             return(JSON.stringify(response));
         },
         error: function(xhr, status, error) {
@@ -144,6 +155,20 @@ function updatePost(id, newContent) {
         success: function(response) {
             console.log(JSON.stringify(response));
             return(JSON.stringify(response));
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading data:', error);
+        }
+    });
+}
+
+function deletePost(id) {
+    $.ajax({
+        url: `http://127.0.0.1:3001/api/posts/${id}`,
+        type: 'DELETE',
+        contentType: 'application/json',
+        success: function(response) {
+            return response;
         },
         error: function(xhr, status, error) {
             console.error('Error loading data:', error);
