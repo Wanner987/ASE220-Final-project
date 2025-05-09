@@ -9,6 +9,15 @@ $(document).ready( function() {
 });
 
 function clickableButtons() {
+    $('#sign-up-button').click(function() {
+        let username = $('#sign-up-username').val();
+        let password = $('#sign-up-password').val();
+        postToCollection('users', {
+            "username": username,
+            "password": password
+        })
+    });
+    
     $("#login-button").click(function() {
         let username = $('#login-username').val();
         let password = $('#login-password').val();
