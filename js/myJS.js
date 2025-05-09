@@ -99,11 +99,16 @@ function getCardsFromDatabase(page, callback) {
 }
 
 function postToCollection(collection, body) {
+    const token = localStorage.getItem('token');
+    
     $.ajax({
         url: `http://127.0.0.1:3001/api/${collection}`,
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(body),
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
         success: function(response) {
             alert(JSON.stringify(response));
         },

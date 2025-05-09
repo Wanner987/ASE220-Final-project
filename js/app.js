@@ -29,31 +29,10 @@ var db;
 //connect to db and listen to port
 start();
 
-app.post('/api', async function(req, res) {
-	console.log('post');
-    let result = await findInCollection('game_articles', 'users', {});
-    //let result=await findInCollection("Test","Test-Collection", req.body);
-    res.json(result);
-});
-
-app.get('/api', async function(req, res) {
-    let result=await findInCollection("Test","Test-Collection", req.body);
-    res.json(result);
-});
-
-app.put('/api', async function(req, res) {
-	console.log('put');
-    res.send('put request new');
-});
-
-app.delete('/api', async function(req, res) {
-	console.log('deleted');
-    res.send('delete request');
-});
 
 //login api
 
-app.post('/api/users', async function(req, res) {
+app.post('/api/users', verifyToken,  async function(req, res) {
     let result = await insertOne('game_articles', 'users', req.body);
     res.send('Added user to database');
 });
@@ -87,7 +66,7 @@ app.get('/api/posts/:page', async function(req, res) {
 })
 
 //posts CRUD
-app.post('/api/posts', async function(req, res) {
+app.post('/api/posts', verifyToken, async function(req, res) {
     insertOne('game_articles', 'posts', req.body);
 })
 
