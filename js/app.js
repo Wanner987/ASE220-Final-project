@@ -32,7 +32,7 @@ start();
 
 //login api
 
-app.post('/api/users', verifyToken,  async function(req, res) {
+app.post('/api/users',  async function(req, res) {
     let result = await insertOne('game_articles', 'users', req.body);
     res.send('Added user to database');
 });
