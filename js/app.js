@@ -61,7 +61,7 @@ app.post('/api/users/login', async function(req, res) {
 
 //get posts 
 app.get('/api/posts/:page', async function(req, res) {
-    let result = await db.db('game_articles').collection('posts').find({}).skip((parseInt(req.params.page) - 1) * 10).limit(10).toArray();
+    let result = await db.db('game_articles').collection('posts').find({}).skip((parseInt(req.params.page) - 1) * 9).limit(9).toArray();
     res.json(result);
 })
 

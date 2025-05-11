@@ -2,6 +2,9 @@ var clientUSername;
 var currentPage = 1;
 var currentPostID;
 var isLoggedIn = false;
+var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+var addPostModal = new bootstrap.Modal(document.getElementById('addPostModal'));
+
 
 $(document).ready( function() {
     clickableButtons();
@@ -35,6 +38,7 @@ function clickableButtons() {
                     "content" : `${content}`
                 })
             }
+            addPostModal.hide();
         }
     });
 
@@ -174,13 +178,22 @@ function loginUserFromDatabase(username, password) {
             "password" : `${password}`
         }),
         success: function(response) {
-            console.log(JSON.stringify(response));
+            if(!(response.message == 'Invalid credentials')) {
+                
             let token = response['token'];
             localStorage.setItem('token', token);
             isLoggedIn = true;
+
+            //close modal
+            loginModal.hide();
+            } else {
+                alert('Invalid credentials');
+            }
+
             return(JSON.stringify(response));
         },
         error: function(xhr, status, error) {
+            alert('Invalid credentials');
             console.error('Error loading data:', error);
         }
     });
